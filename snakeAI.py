@@ -3,6 +3,7 @@ import time
 import random
 import neat
 import os
+import math
 pygame.init()
 
 white = (255, 255, 255)
@@ -94,18 +95,20 @@ def gameLoop(genomes, config):
         # When playing
         ticks += 1
         for x, snake in enumerate(snakes_genomes):
-            ge[x].fitness += 0.1  # Removed points for staying alive
-            output = nets[x].activate((snake["x1"], snake["y1"], foodx, foody))
-            if output[0] > 0:  # snake x go left
+            # ge[x].fitness += 0.1  # Removed points for staying alive
+            output = nets[x].activate(
+                (snake["x1"], snake["y1"], math.dist([snake["x1"], snake["y1"]], [foodx, foody])))
+            max_output = max(output)
+            if output[0] == max_output:  # snake x go left
                 snake["x1_change"] = -snake_block
                 snake["y1_change"] = 0
-            if output[0] < 0:  # snake x go right
+            if output[1] == max_output:  # snake x go right
                 snake["x1_change"] = snake_block
                 snake["y1_change"] = 0
-            if output[1] < 0:  # snake x go up
+            if output[2] == max_output:  # snake x go up
                 snake["y1_change"] = -snake_block
                 snake["x1_change"] = 0
-            if output[1] > 0:  # snake x go down
+            if output[3] == max_output:  # snake x go down
                 snake["y1_change"] = snake_block
                 snake["x1_change"] = 0
 
@@ -123,7 +126,7 @@ def gameLoop(genomes, config):
             dis, green, [foodx, foody, snake_block, snake_block])  # Draw food
         for x, snake in enumerate(snakes_genomes):
             if ticks > 1000:
-                ge[x].fitness -= 150
+                # ge[x].fitness -= 150
                 snakes_genomes.remove(snake)
             snake["x1"] += snake["x1_change"]
             snake["y1"] += snake["y1_change"]
@@ -153,7 +156,7 @@ def gameLoop(genomes, config):
                 foody = round(random.randrange(
                     0, dis_height - snake_block) / 10.0) * 10.0
                 Length_of_snake += 1
-                ge[x].fitness += 10
+                ge[x].fitness += 100
                 ticks = 0
         clock.tick(snake_speed)
     # pygame.quit()
