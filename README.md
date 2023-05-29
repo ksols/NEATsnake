@@ -1,2 +1,2 @@
 # NEATsnake
-NEAT algorithm learning snake
+Python NEAT (Neuroevolution of augmenting topologies) algorithm learning snake
